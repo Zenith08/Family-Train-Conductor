@@ -1,22 +1,23 @@
-#Family Train Conductor Design Mockup
+# Family Train Conductor Design Mockup
+
 Family train conductor is a couch co-op train driving game taking inspiration from Trainz: A New Era and Overcooked.
 
 ![Full View](/docs/game-overview-ui.jpg)
 ![Phone Driving](/docs/phone-mockup.jpg)
 ![Phone Selection](/docs/phone-mode-select.jpg)
 
-##Game Flow: Startup
+## Game Flow: Startup
 * All players connect phones/laptops as controllers
 * They choose and enter a map/level
 
-##Game Flow: In Level
+## Game Flow: In Level
 * Load level
 * Players can claim a train
 * Players can drive train around map switching points as necessary
 * The goal of the player is to keep industries running while serving passenger runs
 * Players communicate with teammates to maximize efficiency
 
-##Train Control
+## Train Control
 * Players select a train to control from their phones at the start of the level. The switch control arrows control the next branching switch in front of the train
 * The train has control over the switch directly in front of it but not the next one along
 
@@ -29,7 +30,7 @@ Family train conductor is a couch co-op train driving game taking inspiration fr
 * If the train is reversed, then switch control will be the switch behind the train
 * If the train is reversed (Maybe pushing?) The train will be speed limited to encourage pulling carriages. Some trains will be bi-directional like subways
 
-##Industries
+## Industries
 
 ![Industries](/docs/industry-picture.jpg)
 
@@ -56,24 +57,24 @@ Family train conductor is a couch co-op train driving game taking inspiration fr
 
 ![Passenger Services 2](/docs/passenger-widget-2.jpg)
 
-##Proposed Story + Levels
+## Proposed Story + Levels
 The story is very basic and is simply that the group of players is going to work as conductors on a rail network. Their job will be to take control of areas of tracks and keep the local industries and passenger runs running.
 
-###Level 1 - Basic Introduction
+### Level 1 - Basic Introduction
 * Introduce basic controls
 * Objective is to complete one circle around forwards and one circle backwards
 * (Yes it’s supposed to be circles)
 
 ![Level 1](/docs/levels/first-level.jpg)
 
-###Level 2 - Switch Control
+### Level 2 - Switch Control
 * Introduces switch controls
 * Forces communication
 * Goal is to make the trains on the right swap with trains on the left
 
 ![Level 2](/docs/levels/level-2.jpg)
 
-###Level 3 - Industries Introduction
+### Level 3 - Industries Introduction
 * Introduces industries
 * Increases communications requirement
 * Should be fairly easy
@@ -84,7 +85,7 @@ The story is very basic and is simply that the group of players is going to work
 
 ![Level 3](/docs/levels/level-3.jpg)
 
-###Level 4 - Introduces Passenger Services
+### Level 4 - Introduces Passenger Services
 * Introduces passenger services
 * Bi-directional trains
 * Regularly scheduled subway service promotes a cycle
@@ -92,7 +93,7 @@ The story is very basic and is simply that the group of players is going to work
 
 ![Level 3](/docs/levels/level-4.jpg)
 
-###Level 5 - Full Gameplay
+### Level 5 - Full Gameplay
 * Introduces simultaneous passenger and freight service
 * Industries are: Top brick building, middle lumber yard, bottom industrial building
 * Stations are: Top, left hand side (double), bottom (double)
@@ -101,8 +102,8 @@ The story is very basic and is simply that the group of players is going to work
 ![Level 3](/docs/levels/level-5-updated.jpg)
 
 
-##Unused Ideas
-###Shunters vs. Haulers
+## Unused Ideas
+### Shunters vs. Haulers
 * Hauler engines are big and faster, they can decouple from their carriages but not specific carriages
 ![Hauler](/docs/hauler-demo-labeled.jpg)
 * Shunters are small locomotives that are slower but can split specific carriages
