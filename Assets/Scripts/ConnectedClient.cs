@@ -16,6 +16,7 @@ public class ConnectedClient
 
     public void CreateAndStartThread()
     {
+        Debug.Log("Client started, beginning thread");
         clientListenerThread = new Thread(new ThreadStart(ListenForControl));
         clientListenerThread.IsBackground = true;
         clientListenerThread.Start();
@@ -23,18 +24,22 @@ public class ConnectedClient
         baseState.channel = channel;
         baseState.speed = 0;
         baseState.reverser = true;
+        Debug.Log("Client initialized, sending message");
         SendMessage(baseState);
     }
 
     public void ListenForControl()
     {
+        Debug.Log("Listener thread starting");
         int length;
         byte[] bytes = new byte[1024];
         using (NetworkStream stream = client.GetStream())
         {
+            Debug.Log("Network Stream found");
             // Read incomming stream into byte arrary. 						
             while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
+                Debug.Log("Recieved packet");
                 var incommingData = new byte[length];
                 Array.Copy(bytes, 0, incommingData, 0, length);
                 // Convert byte array to string message. 							
@@ -46,13 +51,16 @@ public class ConnectedClient
 
     private void SendMessage(ControllerState message)
     {
+        Debug.Log("Trying to send message to client");
         if (client == null)
         {
+            Debug.LogError("Client socket null, failing");
             return;
         }
 
         try
         {
+            Debug.Log("Attempting to send message");
             // Get a stream object for writing. 			
             NetworkStream stream = client.GetStream();
             if (stream.CanWrite)

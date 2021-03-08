@@ -15,7 +15,9 @@ public class InitializationButton : MonoBehaviour
         ClientSocketScript css = clientConnector.GetComponent<ClientSocketScript>();
         string ip = serverIP.text;
         int port = int.Parse(serverPort.text);
+        Debug.Log("Connect Button Pressed, creating connection with ip " + ip + " and port " + port);
         css.InitializeConnection(ip, port);
+        Debug.Log("Loading Controller screen");
         SceneManager.LoadSceneAsync("Controller");
     }
 }

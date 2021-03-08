@@ -29,6 +29,7 @@ public class CoreGameServer : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
+		Debug.Log("Core game server starting");
 		// Start TcpServer background thread 		
 		tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
 		tcpListenerThread.IsBackground = true;
@@ -43,7 +44,7 @@ public class CoreGameServer : MonoBehaviour
 		try
 		{
 			// Create listener on localhost port 8052. 			
-			tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052);
+			tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052); //Localhost may be the issue here
 			tcpListener.Start();
 			Debug.Log("Server is listening");
 			//Byte[] bytes = new Byte[1024];
@@ -51,19 +52,23 @@ public class CoreGameServer : MonoBehaviour
 
 			while (true)
 			{
+				Debug.Log("In main listener loop");
 				using (connectedTcpClient = tcpListener.AcceptTcpClient())
 				{
+					Debug.Log("Recieved client connection");
 					int channel = 0;
 					while(clients[channel] != null && clients[channel].alive)
                     {
 						channel++;
                     }
+					Debug.Log("Client found channel " + channel);
 					//There is a race condition here where 2 threads try to modify the same client at the same time but whatever
 					ConnectedClient newClient = new ConnectedClient();
 					newClient.alive = true;
 					newClient.channel = channel;
 					newClient.client = connectedTcpClient;
 					clients[channel] = newClient;
+					Debug.Log("Starting client thread");
 					clients[channel].CreateAndStartThread();
 
 					/*// Get a stream object for reading 					

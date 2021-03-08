@@ -26,17 +26,14 @@ public class ClientSocketScript : MonoBehaviour
 	// Use this for initialization 	
 	void Start()
 	{
+		Debug.Log("Client Socket Script initializing");
 		DontDestroyOnLoad(this.gameObject);
 		controllerState = new ControllerState();
-	}
-	// Update is called once per frame
-	void Update()
-	{
-		//?
 	}
 
 	public void InitializeConnection(string ipin, int portin)
     {
+		Debug.Log("Client socket creating connection to ip " + ipin);
 		ip = ipin;
 		port = portin;
 		ConnectToTcpServer();
@@ -48,11 +45,14 @@ public class ClientSocketScript : MonoBehaviour
 	/// </summary> 	
 	private void ConnectToTcpServer()
 	{
+		Debug.Log("Attempting to make tcp connection");
 		try
 		{
 			clientReceiveThread = new Thread(new ThreadStart(ListenForData));
 			clientReceiveThread.IsBackground = true;
+			Debug.Log("Starting listener thread");
 			clientReceiveThread.Start();
+			Debug.Log("Listener thread started");
 		}
 		catch (Exception e)
 		{
@@ -66,6 +66,7 @@ public class ClientSocketScript : MonoBehaviour
 	{
 		try
 		{
+			Debug.Log("Listening for packet");
 			socketConnection = new TcpClient(ip, port);
 			Byte[] bytes = new Byte[1024];
 			while (true)
@@ -73,10 +74,12 @@ public class ClientSocketScript : MonoBehaviour
 				// Get a stream object for reading 				
 				using (NetworkStream stream = socketConnection.GetStream())
 				{
+					Debug.Log("Network stream created");
 					int length;
 					// Read incomming stream into byte arrary. 					
 					while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
 					{
+						Debug.Log("Recieved incoming data");
 						var incommingData = new byte[length];
 						Array.Copy(bytes, 0, incommingData, 0, length);
 						// Convert byte array to string message. 						
@@ -98,8 +101,10 @@ public class ClientSocketScript : MonoBehaviour
 	/// </summary> 	
 	private void SendMessage()
 	{
+		Debug.Log("Preparing to send message");
 		if (socketConnection == null)
 		{
+			Debug.LogError("Connection is null, failed");
 			return;
 		}
 		try
@@ -108,6 +113,7 @@ public class ClientSocketScript : MonoBehaviour
 			NetworkStream stream = socketConnection.GetStream();
 			if (stream.CanWrite)
 			{
+				Debug.Log("Able to write stream");
 				//string clientMessage = "This is a message from one of your clients.";
 				string clientMessage = controllerState.ToJson();
 				// Convert string message to byte array.                 
@@ -125,6 +131,7 @@ public class ClientSocketScript : MonoBehaviour
 
 	public void NotifyServerOfChange()
     {
+		Debug.Log("Client notified of change, sending message");
 		SendMessage();
     }
 
