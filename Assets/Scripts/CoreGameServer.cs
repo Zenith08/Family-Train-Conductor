@@ -44,7 +44,7 @@ public class CoreGameServer : MonoBehaviour
 		try
 		{
 			// Create listener on localhost port 8052. 			
-			tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052); //Localhost may be the issue here
+			tcpListener = new TcpListener(IPAddress.Any, 8052); //Localhost may be the issue here
 			tcpListener.Start();
 			Debug.Log("Server is listening");
 			//Byte[] bytes = new Byte[1024];
