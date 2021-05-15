@@ -86,7 +86,10 @@ public class ClientSocketScript : MonoBehaviour
 						string serverMessage = Encoding.ASCII.GetString(incommingData);
 						Debug.Log("server message received as: " + serverMessage);
 						controllerState.FromJsonOverwrite(serverMessage);
-						if (OnControllerStateChange != null) OnControllerStateChange(controllerState);
+                        //if (OnControllerStateChange != null) OnControllerStateChange(controllerState);
+                        //StartCoroutine(ForceEventToMainThread(controllerState));
+                        stateToPush = controllerState;
+                        stateAvailableToPush = true;
 					}
 				}
 			}
@@ -96,6 +99,28 @@ public class ClientSocketScript : MonoBehaviour
 			Debug.Log("Socket exception: " + socketException);
 		}
 	}
+
+    private bool stateAvailableToPush = false;
+    private ControllerState stateToPush;
+
+    private void Update()
+    {
+        if (stateAvailableToPush && stateToPush != null)
+        {
+            stateAvailableToPush = false;
+            if (OnControllerStateChange != null) OnControllerStateChange(stateToPush);
+        }
+    }
+
+    /*private IEnumerator ForceEventToMainThread(ControllerState stateToPush)
+    {
+        yield return null;
+        if(OnControllerStateChange != null)
+        {
+            OnControllerStateChange(stateToPush);
+        }
+    }*/
+
 	/// <summary> 	
 	/// Send message to server using socket connection. 	
 	/// </summary> 	
