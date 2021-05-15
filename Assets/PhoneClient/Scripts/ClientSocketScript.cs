@@ -17,7 +17,7 @@ public class ClientSocketScript : MonoBehaviour
 
 	public bool isConnected = false;
 
-	private ControllerState controllerState;
+	public static ControllerState controllerState;
 
 	public delegate void ControllerStateChange(ControllerState newState);
 	public event ControllerStateChange OnControllerStateChange;

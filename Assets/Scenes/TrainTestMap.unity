@@ -482,6 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2451cd3b2e97e594c8a37cc115c1d1bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controllerRef: {fileID: 1658654615}
 --- !u!4 &561858968
 Transform:
   m_ObjectHideFlags: 0
@@ -1407,12 +1408,17 @@ PrefabInstance:
     - target: {fileID: 4747649557596804117, guid: 87a7d7d376dc35d4f9cb50ffc26ec90b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5233051166774207599, guid: 87a7d7d376dc35d4f9cb50ffc26ec90b,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 1.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217653349066445973, guid: 87a7d7d376dc35d4f9cb50ffc26ec90b,
+        type: 3}
+      propertyPath: dccControl
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 87a7d7d376dc35d4f9cb50ffc26ec90b, type: 3}

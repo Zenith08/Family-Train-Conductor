@@ -14,13 +14,15 @@ public class ConnectedClient
     public int channel;
     public bool alive;
 
+    public ControllerState baseState;
+
     public void CreateAndStartThread()
     {
         Debug.Log("Client started, beginning thread");
         clientListenerThread = new Thread(new ThreadStart(ListenForControl));
         clientListenerThread.IsBackground = true;
         clientListenerThread.Start();
-        ControllerState baseState = new ControllerState();
+        baseState = new ControllerState();
         baseState.channel = channel;
         baseState.speed = 0;
         baseState.reverser = true;
@@ -36,6 +38,7 @@ public class ConnectedClient
         using (NetworkStream stream = client.GetStream())
         {
             Debug.Log("Network Stream found");
+            alive = true;
             // Read incomming stream into byte arrary. 						
             while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
@@ -44,14 +47,18 @@ public class ConnectedClient
                 Array.Copy(bytes, 0, incommingData, 0, length);
                 // Convert byte array to string message. 							
                 string clientMessage = Encoding.ASCII.GetString(incommingData);
+                baseState.FromJsonOverwrite(clientMessage);
                 Debug.Log("client message received as: " + clientMessage);
             }
         }
+        Debug.LogWarning("Client " + channel + " lost");
+        alive = false;
     }
 
     private void SendMessage(ControllerState message)
     {
         Debug.Log("Trying to send message to client");
+        baseState = message;
         if (client == null)
         {
             Debug.LogError("Client socket null, failing");

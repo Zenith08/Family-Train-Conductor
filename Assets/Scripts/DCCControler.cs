@@ -13,6 +13,21 @@ public class DCCControler : MonoBehaviour
     void Start()
     {
         channels = new List<TrainControl>(NUM_CHANNELS);
+        for(int i = 0; i < NUM_CHANNELS; i++)
+        {
+            channels.Add(new TrainControl { speed = 0f, reverser = false });
+        }
+    }
+
+    public void SetDCCInformation(List<ControllerState> controllers)
+    {
+        foreach(ControllerState cs in controllers)
+        {
+            if(cs.channel < NUM_CHANNELS && cs.channel >= 0)
+            {
+                SetController(cs.channel, cs.speed, cs.reverser);
+            }
+        }
     }
 
     public float GetSpeed(int channel)
