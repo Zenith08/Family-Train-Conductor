@@ -51,6 +51,7 @@ public class RayLoco : RayTrain
             speedMultiplier = controler.GetSpeed(channel);
             forewards = controler.GetDirection(channel);
             speed = forewards ? (speedMultiplier * maxSpeedF) : (speedMultiplier * -maxSpeedR);
+            //Debug.Log("Getting speed from DCC, result " + speedMultiplier + " speed is " + speed);
         }
     }
 

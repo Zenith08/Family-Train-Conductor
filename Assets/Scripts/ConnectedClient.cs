@@ -21,11 +21,13 @@ public class ConnectedClient
         Debug.Log("Client started, beginning thread");
         clientListenerThread = new Thread(new ThreadStart(ListenForControl));
         clientListenerThread.IsBackground = true;
-        clientListenerThread.Start();
         baseState = new ControllerState();
         baseState.channel = channel;
         baseState.speed = 0;
         baseState.reverser = true;
+
+        //Smart thing to do: this last
+        clientListenerThread.Start();
         Debug.Log("Client initialized, sending message");
         SendMessage(baseState);
     }
@@ -45,10 +47,18 @@ public class ConnectedClient
                 Debug.Log("Recieved packet");
                 var incommingData = new byte[length];
                 Array.Copy(bytes, 0, incommingData, 0, length);
-                // Convert byte array to string message. 							
+                // Convert byte array to string message.
                 string clientMessage = Encoding.ASCII.GetString(incommingData);
-                baseState.FromJsonOverwrite(clientMessage);
                 Debug.Log("client message received as: " + clientMessage);
+                if (clientMessage.Contains("}{"))
+                {
+                    Debug.LogError("SOMETHING IS WRONG REJECTING PACKAGE");
+                    continue; //Abandon this package
+                }
+                else
+                {
+                    baseState.FromJsonOverwrite(clientMessage);
+                }
             }
         }
         Debug.LogWarning("Client " + channel + " lost");

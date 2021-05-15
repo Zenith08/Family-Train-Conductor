@@ -57,9 +57,16 @@ public class CoreGameServer : MonoBehaviour
     {
         for(int i = 0; i < clients.Count && i < 4; i++)
         {
-			controllerStates[i] = clients[i].baseState;
+			//controllerStates[i] = clients[i].baseState;
+			ConnectedClient client = clients[i];
+			if (client.alive && client.baseState != null)
+            {
+				//Debug.Log("Client " + i + " has DCC data, On Channel " + client.baseState.channel + " sending speed " + client.baseState.speed + " reverser " + client.baseState.reverser);
+				ControllerState state = client.baseState;
+				controllerRef.SetController(state.channel, state.speed, state.reverser);
+			}
         }
-		controllerRef.SetDCCInformation(controllerStates);
+		//controllerRef.SetDCCInformation(controllerStates);
     }
 
     /// <summary> 	
