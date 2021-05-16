@@ -24,8 +24,14 @@ public class SwitchTrack : MonoBehaviour
         }
         else
         {
-            UpdateTracks();
+            StartCoroutine(UpdateNextFrame());
         }
+    }
+
+    private IEnumerator UpdateNextFrame()
+    {
+        yield return null;
+        UpdateTracks();
     }
 
     // Update is called once per frame

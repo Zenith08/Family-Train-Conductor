@@ -4,15 +4,29 @@ using UnityEngine;
 
 public class DCCControler : MonoBehaviour
 {
-
     public const int NUM_CHANNELS = 4;
 
-    public List<TrainControl> channels;
+    private List<TrainControl> channels;
 
     // Start is called before the first frame update
     void Start()
     {
         channels = new List<TrainControl>(NUM_CHANNELS);
+        for(int i = 0; i < NUM_CHANNELS; i++)
+        {
+            channels.Add(new TrainControl { speed = 0f, reverser = false });
+        }
+    }
+
+    public void SetDCCInformation(List<ControllerState> controllers)
+    {
+        foreach(ControllerState cs in controllers)
+        {
+            if(cs != null && cs.channel < NUM_CHANNELS && cs.channel >= 0)
+            {
+                SetController(cs.channel, cs.speed, cs.reverser);
+            }
+        }
     }
 
     public float GetSpeed(int channel)
@@ -27,6 +41,10 @@ public class DCCControler : MonoBehaviour
 
     public void SetController(int channel, float speed, bool reverser)
     {
+        if(speed == 0)
+        {
+            //Debug.LogError("I just want a stacktrace man");
+        }
         channels[channel].speed = speed;
         channels[channel].reverser = reverser;
     }

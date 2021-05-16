@@ -15,6 +15,11 @@ public class ChannelNumber : SynchronizedValue
         textRef.text = "-1";
     }
 
+    protected void Update()
+    {
+        textRef.text = ClientSocketScript.controllerState.channel.ToString();
+    }
+
     protected override void OnControllerStateChange(ControllerState newState)
     {
         textRef.text = newState.channel.ToString();

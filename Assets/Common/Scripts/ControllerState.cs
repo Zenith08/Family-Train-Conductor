@@ -14,6 +14,16 @@ public class ControllerState
     public float masSpeedForewards;
     public float maxSpeedBackwards;
 
+    public ControllerState()
+    {
+
+    }
+
+    public ControllerState(int channel)
+    {
+        this.channel = channel;
+    }
+
     public string ToJson()
     {
         return JsonUtility.ToJson(this);

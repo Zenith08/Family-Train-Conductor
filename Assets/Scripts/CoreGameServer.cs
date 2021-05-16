@@ -21,9 +21,19 @@ public class CoreGameServer : MonoBehaviour
 	private Thread tcpListenerThread;
 	/// <summary> 	
 	/// Create handle to connected tcp client.
-	/// </summary> 	
-	//private TcpClient connectedTcpClient;
+	/// </summary>
 	private List<ConnectedClient> clients = new List<ConnectedClient>(4);
+
+	public DCCControler controllerRef;
+
+	private static ConnectedClient EMPTY_CLIENT = new ConnectedClient
+	{
+		client = null,
+		clientListenerThread = null,
+		channel = 0,
+		alive = false,
+		baseState = new ControllerState()
+	};
 	#endregion
 
 	// Start is called before the first frame update
@@ -34,32 +44,72 @@ public class CoreGameServer : MonoBehaviour
 		tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
 		tcpListenerThread.IsBackground = true;
 		tcpListenerThread.Start();
+
+		for(int i = 0; i < 4; i++)
+        {
+			clients.Add(EMPTY_CLIENT);
+			controllerStates.Add(new ControllerState(-1));
+        }
 	}
 
-	/// <summary> 	
-	/// Runs in background TcpServerThread; Handles incomming TcpClient requests 	
-	/// </summary> 	
-	private void ListenForIncommingRequests()
+	private List<ControllerState> controllerStates = new List<ControllerState>();
+    private void Update()
+    {
+        for(int i = 0; i < clients.Count && i < 4; i++)
+        {
+			//controllerStates[i] = clients[i].baseState;
+			ConnectedClient client = clients[i];
+			if (client.alive && client.baseState != null)
+            {
+				//Debug.Log("Client " + i + " has DCC data, On Channel " + client.baseState.channel + " sending speed " + client.baseState.speed + " reverser " + client.baseState.reverser);
+				ControllerState state = client.baseState;
+				controllerRef.SetController(state.channel, state.speed, state.reverser);
+			}
+        }
+		//controllerRef.SetDCCInformation(controllerStates);
+    }
+
+    /// <summary> 	
+    /// Runs in background TcpServerThread; Handles incomming TcpClient requests 	
+    /// </summary> 	
+    private void ListenForIncommingRequests()
 	{
 		try
 		{
 			// Create listener on localhost port 8052. 			
-			tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052); //Localhost may be the issue here
+			tcpListener = new TcpListener(IPAddress.Any, 8052);
 			tcpListener.Start();
 			Debug.Log("Server is listening");
-			//Byte[] bytes = new Byte[1024];
-			TcpClient connectedTcpClient;
+			TcpClient connectedTcpClient = null;
 
 			while (true)
 			{
 				Debug.Log("In main listener loop");
-				using (connectedTcpClient = tcpListener.AcceptTcpClient())
+				try
 				{
+					connectedTcpClient = tcpListener.AcceptTcpClient();
 					Debug.Log("Recieved client connection");
+
 					int channel = 0;
-					while(clients[channel] != null && clients[channel].alive)
+					bool channelFound = false;
+					while(!channelFound)
                     {
-						channel++;
+						if(clients.Count > channel)
+                        {
+							if(!clients[channel].alive)
+                            {
+								channelFound = true;
+                            }
+                            else
+                            {
+								channel++;
+                            }
+                        }
+                        else
+                        {
+							clients.Add(EMPTY_CLIENT);
+							channelFound = true;
+                        }
                     }
 					Debug.Log("Client found channel " + channel);
 					//There is a race condition here where 2 threads try to modify the same client at the same time but whatever
@@ -68,24 +118,17 @@ public class CoreGameServer : MonoBehaviour
 					newClient.channel = channel;
 					newClient.client = connectedTcpClient;
 					clients[channel] = newClient;
+
 					Debug.Log("Starting client thread");
 					clients[channel].CreateAndStartThread();
-
-					/*// Get a stream object for reading 					
-					using (NetworkStream stream = connectedTcpClient.GetStream())
-					{
-						int length;
-						// Read incomming stream into byte arrary. 						
-						while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
-						{
-							var incommingData = new byte[length];
-							Array.Copy(bytes, 0, incommingData, 0, length);
-							// Convert byte array to string message. 							
-							string clientMessage = Encoding.ASCII.GetString(incommingData);
-							Debug.Log("client message received as: " + clientMessage);
-						}
-					}*/
 				}
+				catch(Exception e)
+                {
+					if (connectedTcpClient != null) connectedTcpClient.Dispose();
+					Debug.LogError(e.ToString());
+					Debug.LogError(e.Message);
+					Debug.LogError(e.StackTrace);
+                }
 			}
 		}
 		catch (SocketException socketException)

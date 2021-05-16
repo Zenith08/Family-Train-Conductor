@@ -14,16 +14,20 @@ public class ConnectedClient
     public int channel;
     public bool alive;
 
+    public ControllerState baseState;
+
     public void CreateAndStartThread()
     {
         Debug.Log("Client started, beginning thread");
         clientListenerThread = new Thread(new ThreadStart(ListenForControl));
         clientListenerThread.IsBackground = true;
-        clientListenerThread.Start();
-        ControllerState baseState = new ControllerState();
+        baseState = new ControllerState();
         baseState.channel = channel;
         baseState.speed = 0;
         baseState.reverser = true;
+
+        //Smart thing to do: this last
+        clientListenerThread.Start();
         Debug.Log("Client initialized, sending message");
         SendMessage(baseState);
     }
@@ -36,22 +40,35 @@ public class ConnectedClient
         using (NetworkStream stream = client.GetStream())
         {
             Debug.Log("Network Stream found");
+            alive = true;
             // Read incomming stream into byte arrary. 						
             while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
                 Debug.Log("Recieved packet");
                 var incommingData = new byte[length];
                 Array.Copy(bytes, 0, incommingData, 0, length);
-                // Convert byte array to string message. 							
+                // Convert byte array to string message.
                 string clientMessage = Encoding.ASCII.GetString(incommingData);
                 Debug.Log("client message received as: " + clientMessage);
+                if (clientMessage.Contains("}{"))
+                {
+                    Debug.LogError("SOMETHING IS WRONG REJECTING PACKAGE");
+                    continue; //Abandon this package
+                }
+                else
+                {
+                    baseState.FromJsonOverwrite(clientMessage);
+                }
             }
         }
+        Debug.LogWarning("Client " + channel + " lost");
+        alive = false;
     }
 
     private void SendMessage(ControllerState message)
     {
         Debug.Log("Trying to send message to client");
+        baseState = message;
         if (client == null)
         {
             Debug.LogError("Client socket null, failing");
