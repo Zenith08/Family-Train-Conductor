@@ -43,7 +43,7 @@ public class DCCControler : MonoBehaviour
     {
         if(speed == 0)
         {
-            Debug.LogError("I just want a stacktrace man");
+            //Debug.LogError("I just want a stacktrace man");
         }
         channels[channel].speed = speed;
         channels[channel].reverser = reverser;
