@@ -26,6 +26,8 @@ public class CoreGameServer : MonoBehaviour
 
 	public DCCControler controllerRef;
 
+	public bool serverAlive = true;
+
 	private static ConnectedClient EMPTY_CLIENT = new ConnectedClient
 	{
 		client = null,
@@ -40,19 +42,32 @@ public class CoreGameServer : MonoBehaviour
 	void Start()
     {
 		Debug.Log("Core game server starting");
-		// Start TcpServer background thread 		
-		tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
-		tcpListenerThread.IsBackground = true;
-		tcpListenerThread.Start();
+		serverAlive = true;
+        // Start TcpServer background thread 		
+        tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests))
+        {
+            IsBackground = true
+        };
 
 		for(int i = 0; i < 4; i++)
         {
 			clients.Add(EMPTY_CLIENT);
 			controllerStates.Add(new ControllerState(-1));
         }
+		Debug.Log("Starting thread");
+		tcpListenerThread.Start();
 	}
 
-	private List<ControllerState> controllerStates = new List<ControllerState>();
+    private void OnDestroy()
+    {
+		serverAlive = false;
+		tcpListener.Stop();
+		Debug.Log("The server is shutting down. This will generate an exception. Everything is fine");
+		tcpListenerThread.Abort();
+		tcpListenerThread.Join();
+    }
+
+    private List<ControllerState> controllerStates = new List<ControllerState>();
     private void Update()
     {
         for(int i = 0; i < clients.Count && i < 4; i++)
@@ -63,7 +78,7 @@ public class CoreGameServer : MonoBehaviour
             {
 				//Debug.Log("Client " + i + " has DCC data, On Channel " + client.baseState.channel + " sending speed " + client.baseState.speed + " reverser " + client.baseState.reverser);
 				ControllerState state = client.baseState;
-				controllerRef.SetController(state.channel, state.speed, state.reverser);
+				controllerRef.SetController(state.channel, state.speed, state.reverser, state.nextSwitch);
 			}
         }
 		//controllerRef.SetDCCInformation(controllerStates);
@@ -74,8 +89,10 @@ public class CoreGameServer : MonoBehaviour
     /// </summary> 	
     private void ListenForIncommingRequests()
 	{
+		Debug.Log("Function listen for incoming requests has started");
 		try
 		{
+			Debug.Log("Try catch block has started");
 			// Create listener on localhost port 8052. 			
 			tcpListener = new TcpListener(IPAddress.Any, 8052);
 			tcpListener.Start();
@@ -128,6 +145,7 @@ public class CoreGameServer : MonoBehaviour
 					Debug.LogError(e.ToString());
 					Debug.LogError(e.Message);
 					Debug.LogError(e.StackTrace);
+					Debug.LogError(e.Source);
                 }
 			}
 		}

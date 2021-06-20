@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RayTrain : MonoBehaviour
 {
@@ -14,7 +12,7 @@ public class RayTrain : MonoBehaviour
     protected virtual void Start()
     {
         trainRigidbody = GetComponent<Rigidbody>();
-        if(trainBehind != null)
+        if (trainBehind != null)
         {
             trainBehind.NotifyBeingPulled(this);
         }
@@ -22,7 +20,7 @@ public class RayTrain : MonoBehaviour
 
     protected virtual void NotifyBeingPulled(RayTrain puller)
     {
-        if(trainAhead == null)
+        if (trainAhead == null)
         {
             trainAhead = puller;
         }
@@ -61,7 +59,7 @@ public class RayTrain : MonoBehaviour
 
         if (!rayRight || !rayLeft)
         {
-            Debug.LogError("Derailed side rays did not work");
+            Debug.LogWarning("Derailed side rays did not work");
         }
 
         trainRigidbody.MovePosition(transform.position + (transform.right * (rightHit.distance - leftHit.distance) / 2) + (transform.forward * speed * 0.1f));

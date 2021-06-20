@@ -14,7 +14,7 @@ public class DCCControler : MonoBehaviour
         channels = new List<TrainControl>(NUM_CHANNELS);
         for(int i = 0; i < NUM_CHANNELS; i++)
         {
-            channels.Add(new TrainControl { speed = 0f, reverser = false });
+            channels.Add(new TrainControl { speed = 0f, reverser = false, nextSwitch = false });
         }
     }
 
@@ -24,7 +24,7 @@ public class DCCControler : MonoBehaviour
         {
             if(cs != null && cs.channel < NUM_CHANNELS && cs.channel >= 0)
             {
-                SetController(cs.channel, cs.speed, cs.reverser);
+                SetController(cs.channel, cs.speed, cs.reverser, cs.nextSwitch);
             }
         }
     }
@@ -39,7 +39,12 @@ public class DCCControler : MonoBehaviour
         return channels[channel].reverser;
     }
 
-    public void SetController(int channel, float speed, bool reverser)
+    public bool GetNextSwitch(int channel)
+    {
+        return channels[channel].nextSwitch;
+    }
+
+    public void SetController(int channel, float speed, bool reverser, bool nextSwitch)
     {
         if(speed == 0)
         {
@@ -47,11 +52,13 @@ public class DCCControler : MonoBehaviour
         }
         channels[channel].speed = speed;
         channels[channel].reverser = reverser;
+        channels[channel].nextSwitch = nextSwitch;
     }
 
     public class TrainControl
     {
         public float speed;
         public bool reverser;
+        public bool nextSwitch;
     }
 }

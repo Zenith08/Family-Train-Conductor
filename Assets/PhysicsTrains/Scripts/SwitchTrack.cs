@@ -37,11 +37,17 @@ public class SwitchTrack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        /*if(Input.GetKeyDown(KeyCode.Space))
         {
             direction = !direction;
             UpdateTracks();
-        }
+        }*/
+    }
+
+    public void DoSwitch()
+    {
+        direction = !direction;
+        UpdateTracks();
     }
 
     private void UpdateTracks()

@@ -19,6 +19,8 @@ public class RayLoco : RayTrain
     public int channel = 0;
     private DCCControler controler;
 
+    private bool targetSwitchLastFrame = false;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -52,6 +54,26 @@ public class RayLoco : RayTrain
             forewards = controler.GetDirection(channel);
             speed = forewards ? (speedMultiplier * maxSpeedF) : (speedMultiplier * -maxSpeedR);
             //Debug.Log("Getting speed from DCC, result " + speedMultiplier + " speed is " + speed);
+            if(targetSwitchLastFrame != controler.GetNextSwitch(channel))
+            {
+                targetSwitchLastFrame = controler.GetNextSwitch(channel);
+                //Get rotation from track
+                bool rayDown = Physics.Raycast(rayStart.transform.position, -rayStart.transform.up, out RaycastHit downHit, 0.5f);
+                Debug.DrawRay(rayStart.transform.position, -rayStart.transform.up, Color.blue, 0.5f);
+                if (!rayDown)
+                {
+                    Debug.LogError("Not on a track or something because switch check failed.");
+                }
+                else
+                {
+                    Track tk = downHit.collider.gameObject.GetComponent<Track>();
+                    SwitchTrack st = forewards ? tk.nextSwitchForwards : tk.nextSwitchReverse;
+                    if(st != null)
+                    {
+                        st.DoSwitch();
+                    }
+                }
+            }
         }
     }
 

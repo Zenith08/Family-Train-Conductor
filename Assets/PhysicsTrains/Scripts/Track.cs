@@ -9,6 +9,9 @@ public class Track : MonoBehaviour
 
     protected Collider localCollider;
 
+    public SwitchTrack nextSwitchForwards;
+    public SwitchTrack nextSwitchReverse;
+
     // Start is called before the first frame update
     protected virtual void Start()
     {
