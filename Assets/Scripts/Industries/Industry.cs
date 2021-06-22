@@ -14,9 +14,11 @@ public class Industry : MonoBehaviour
     public int consumedResource;
     public float consumedPerSecond;
     public int remainingConsumables;
+    [Header("Mechanics")]
+    public TextMesh resourceDisplay;
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
         if(mode == IndustryMode.PRODUCER)
         {
@@ -31,7 +33,7 @@ public class Industry : MonoBehaviour
         else if(mode == IndustryMode.CONVERTER)
         {
             int ammountToConsume = Mathf.RoundToInt(consumedPerSecond * Time.deltaTime);
-            if (remainingConsumables - ammountToConsume >= 0 && producedQuantity < 400)
+            if (remainingConsumables - ammountToConsume > 0 && producedQuantity < 400)
             {
                 remainingConsumables -= ammountToConsume;
                 producedQuantity += Mathf.RoundToInt(producedPerSecond * Time.deltaTime);
@@ -40,19 +42,42 @@ public class Industry : MonoBehaviour
         }
     }
 
+    protected void LateUpdate()
+    {
+        UpdateResourceDisplay();
+    }
+
+    private void UpdateResourceDisplay()
+    {
+        switch (mode)
+        {
+            case IndustryMode.PRODUCER:
+                resourceDisplay.text = producedQuantity.ToString();
+                break;
+            case IndustryMode.CONSUMER:
+                resourceDisplay.text = remainingConsumables.ToString();
+                break;
+            case IndustryMode.CONVERTER:
+            default:
+                resourceDisplay.text = remainingConsumables.ToString() + "/" + producedQuantity.ToString();
+                break;
+        }
+            
+    }
+
     public void OnTriggerStay(Collider other)
     {
         //Debug.Log("Element staying in trigger " + other.gameObject.name);
         //If it is a train car that's great. If not I don't care.
         if(other.gameObject.TryGetComponent<RayCarriage>(out RayCarriage traincar))
         {
-            Debug.Log("Element is a traincar and stopped = " + traincar.IsStopped());
+            //Debug.Log("Element is a traincar and stopped = " + traincar.IsStopped());
             if (traincar.IsStopped())
             {
                 if(Produces() && producedResource == traincar.resourceNum)
                 {
                     //Load the car as much as possible
-                    producedQuantity = traincar.LoadAsMuchAsPossible(producedQuantity);
+                    producedQuantity -= traincar.LoadAsMuchAsPossible(producedQuantity);
                 }
                 else if(Consumes() && consumedResource == traincar.resourceNum)
                 {

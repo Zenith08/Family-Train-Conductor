@@ -10,6 +10,8 @@ public class SwitchTrack : MonoBehaviour
     public Track straight;
     public Track turn;
 
+    public ClearanceChecker switchClearance;
+
     public bool invert = false;
 
     public bool direction = STRAIGHT;
@@ -34,20 +36,13 @@ public class SwitchTrack : MonoBehaviour
         UpdateTracks();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void DoSwitch()
     {
-        /*if(Input.GetKeyDown(KeyCode.Space))
+        if (switchClearance.IsSwitchClear())
         {
             direction = !direction;
             UpdateTracks();
-        }*/
-    }
-
-    public void DoSwitch()
-    {
-        direction = !direction;
-        UpdateTracks();
+        }
     }
 
     private void UpdateTracks()
