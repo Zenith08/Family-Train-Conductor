@@ -19,6 +19,8 @@ public class RayLoco : RayTrain
     public int channel = 0;
     private DCCControler controler;
 
+    public Transform frontClearanceRay;
+
     private bool targetSwitchLastFrame = false;
 
     private bool isCollided = false;
@@ -55,6 +57,19 @@ public class RayLoco : RayTrain
             speedMultiplier = controler.GetSpeed(channel);
             forewards = controler.GetDirection(channel);
             speed = forewards ? (speedMultiplier * maxSpeedF) : (speedMultiplier * -maxSpeedR);
+
+            if (forewards)
+            {
+                bool rayFront = Physics.Raycast(frontClearanceRay.transform.position, frontClearanceRay.forward, out RaycastHit frontHit, 1f);
+                if(rayFront)
+                {
+                    if(frontHit.collider.TryGetComponent<RayTrain>(out _))
+                    {
+                        speed = 0f;
+                    }
+                }
+            }
+
             if (isCollided) speed = 0; //If we hit another train we are not moving until that is solved.
             //Debug.Log("Getting speed from DCC, result " + speedMultiplier + " speed is " + speed);
             if(targetSwitchLastFrame != controler.GetNextSwitch(channel))
