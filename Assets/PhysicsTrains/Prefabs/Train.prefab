@@ -250,6 +250,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rayStart: {fileID: 8076070013834648017}
+  trainAhead: {fileID: 0}
+  trainBehind: {fileID: 0}
+  maxSpeedF: 5
+  maxSpeedR: 3
+  goFaster: w
+  goSlower: s
+  dccControl: 0
+  channel: 0
 --- !u!1 &8076070015388911990
 GameObject:
   m_ObjectHideFlags: 0

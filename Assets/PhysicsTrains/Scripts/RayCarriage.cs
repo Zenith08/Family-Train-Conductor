@@ -6,6 +6,20 @@ public class RayCarriage : RayTrain
 {
     protected float distanceFromEngine;
 
+    public Color resourceColour;
+    protected float resourceH;
+    protected float resourceS;
+
+    public int resourceNum;
+
+    protected int resourceQty;
+
+    protected Material localMat;
+
+    protected float speed;
+
+    public static readonly float LARGE_EPSILON = 0.0001f;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -13,7 +27,20 @@ public class RayCarriage : RayTrain
         if(trainAhead != null)
         {
             distanceFromEngine = Vector3.Distance(transform.position, trainAhead.transform.position);
-        }        
+        }
+
+        localMat = GetComponent<MeshRenderer>().material;
+
+        //Set up for updating colour
+        Color.RGBToHSV(resourceColour, out resourceH, out resourceS, out _);
+        UpdateColour();
+    }
+
+    protected void UpdateColour()
+    {
+        float qtyBuff = resourceQty;
+        float newL = 0.5f + qtyBuff / 100f;
+        localMat.color = Color.HSVToRGB(resourceH, resourceS, newL);
     }
 
     protected override void NotifyBeingPulled(RayTrain puller)
@@ -25,10 +52,16 @@ public class RayCarriage : RayTrain
         }
     }
 
+    public bool IsStopped()
+    {
+        //Debug.Log("Checking stopped with speed " + speed);
+        return Mathf.Abs(speed) <= LARGE_EPSILON;
+    }
+
     public override void PullingFixedUpdate(float engineSpeed)
     {
-        //Debug.Log("Pulling Carriage Update");
-        float speed = engineSpeed;
+        //Debug.Log("Pulling fixed update with engine speed " + engineSpeed);
+        speed = engineSpeed;
 
         if(trainAhead != null)
         {
@@ -41,5 +74,38 @@ public class RayCarriage : RayTrain
                 trainBehind.PullingFixedUpdate(speed);
             }
         }
+    }
+
+    public int LoadAsMuchAsPossible(int max)
+    {
+        if(resourceQty < 100)
+        {
+            int maxToFull = 100 - resourceQty;
+            if(max <= maxToFull)
+            {
+                resourceQty += max;
+                UpdateColour();
+                return max;
+            }
+            else
+            {
+                resourceQty += maxToFull;
+                UpdateColour();
+                return maxToFull;
+            }
+        }
+        else
+        {
+            UpdateColour();
+            return 0;
+        }
+    }
+
+    public int UnloadAsMuchAsPossible()
+    {
+        int buffer = resourceQty;
+        resourceQty = 0;
+        UpdateColour();
+        return buffer;
     }
 }

@@ -21,6 +21,8 @@ public class RayLoco : RayTrain
 
     private bool targetSwitchLastFrame = false;
 
+    private bool isCollided = false;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -53,6 +55,7 @@ public class RayLoco : RayTrain
             speedMultiplier = controler.GetSpeed(channel);
             forewards = controler.GetDirection(channel);
             speed = forewards ? (speedMultiplier * maxSpeedF) : (speedMultiplier * -maxSpeedR);
+            if (isCollided) speed = 0; //If we hit another train we are not moving until that is solved.
             //Debug.Log("Getting speed from DCC, result " + speedMultiplier + " speed is " + speed);
             if(targetSwitchLastFrame != controler.GetNextSwitch(channel))
             {
