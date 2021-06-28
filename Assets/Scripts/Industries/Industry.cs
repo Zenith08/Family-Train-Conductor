@@ -17,28 +17,42 @@ public class Industry : MonoBehaviour
     [Header("Mechanics")]
     public TextMesh resourceDisplay;
 
+    private void Start()
+    {
+        StartCoroutine(SecondClock());
+    }
+
     // Update is called once per frame
-    protected void Update()
+    protected void OnSecond()
     {
         if(mode == IndustryMode.PRODUCER)
         {
-            producedQuantity += Mathf.RoundToInt(producedPerSecond * Time.deltaTime);
+            producedQuantity += Mathf.RoundToInt(producedPerSecond);
             if (producedQuantity > 400) producedQuantity = 400;
         }
         else if(mode == IndustryMode.CONSUMER)
         {
-            remainingConsumables -= Mathf.RoundToInt(consumedPerSecond * Time.deltaTime);
+            remainingConsumables -= Mathf.RoundToInt(consumedPerSecond);
             if (remainingConsumables < 0) remainingConsumables = 0;
         }
         else if(mode == IndustryMode.CONVERTER)
         {
-            int ammountToConsume = Mathf.RoundToInt(consumedPerSecond * Time.deltaTime);
+            int ammountToConsume = Mathf.RoundToInt(consumedPerSecond);
             if (remainingConsumables - ammountToConsume > 0 && producedQuantity < 400)
             {
                 remainingConsumables -= ammountToConsume;
-                producedQuantity += Mathf.RoundToInt(producedPerSecond * Time.deltaTime);
+                producedQuantity += Mathf.RoundToInt(producedPerSecond);
                 if (producedQuantity > 400) producedQuantity = 400;
             }
+        }
+    }
+
+    private IEnumerator SecondClock()
+    {
+        while (this.isActiveAndEnabled)
+        {
+            OnSecond();
+            yield return new WaitForSeconds(1f);
         }
     }
 

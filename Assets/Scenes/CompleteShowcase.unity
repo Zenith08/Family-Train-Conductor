@@ -691,7 +691,7 @@ PrefabInstance:
     - target: {fileID: 5675593236721638520, guid: d768cc7a273d0b3418b3c3902d2cf2eb,
         type: 3}
       propertyPath: producedPerSecond
-      value: 1
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d768cc7a273d0b3418b3c3902d2cf2eb, type: 3}
@@ -1367,7 +1367,12 @@ PrefabInstance:
     - target: {fileID: 5675593236721638520, guid: d768cc7a273d0b3418b3c3902d2cf2eb,
         type: 3}
       propertyPath: consumedPerSecond
-      value: 2
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5675593236721638520, guid: d768cc7a273d0b3418b3c3902d2cf2eb,
+        type: 3}
+      propertyPath: producedPerSecond
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d768cc7a273d0b3418b3c3902d2cf2eb, type: 3}
@@ -1687,12 +1692,12 @@ PrefabInstance:
     - target: {fileID: 5675593236721638520, guid: d768cc7a273d0b3418b3c3902d2cf2eb,
         type: 3}
       propertyPath: consumedPerSecond
-      value: 1
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5675593236721638520, guid: d768cc7a273d0b3418b3c3902d2cf2eb,
         type: 3}
       propertyPath: producedPerSecond
-      value: 1
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d768cc7a273d0b3418b3c3902d2cf2eb, type: 3}

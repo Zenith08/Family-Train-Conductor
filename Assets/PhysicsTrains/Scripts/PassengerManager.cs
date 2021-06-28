@@ -14,6 +14,8 @@ public class PassengerManager : MonoBehaviour
 
     public int bookAheadTime = 30;
 
+    public int maxActiveRoutes = 3;
+
     private int lastTimeTripGenerated;
     private int nextTripToGenerate;
     private int locationInGenerationPattern = 0;
@@ -35,11 +37,31 @@ public class PassengerManager : MonoBehaviour
     {
         if(Time.time - lastTimeTripGenerated >= timeBetweenGenerations)
         {
-            //Generate Trip
-            Debug.Log("PassengerSystem scheduling new route based on template " + tripGenerationPattern[locationInGenerationPattern]);
-            lastTimeTripGenerated = Mathf.RoundToInt(Time.time);
-            ScheduleRoute();
+            if(CurrentlyActiveRoutes() < maxActiveRoutes)
+            {
+                //Generate Trip
+                Debug.Log("PassengerSystem scheduling new route based on template " + tripGenerationPattern[locationInGenerationPattern]);
+                lastTimeTripGenerated = Mathf.RoundToInt(Time.time);
+                ScheduleRoute();
+            }
+            else
+            {
+                lastTimeTripGenerated = Mathf.RoundToInt(Time.time);
+            }
         }
+    }
+
+    int CurrentlyActiveRoutes()
+    {
+        int sum = 0;
+        for(int i = 0, count = activeTrips.Count; i < count; i++)
+        {
+            if (!activeTrips[i].isRouteDone)
+            {
+                sum++;
+            }
+        }
+        return sum;
     }
 
     private void ScheduleRoute()
