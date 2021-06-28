@@ -18,6 +18,8 @@ public class RayCarriage : RayTrain
 
     protected float speed;
 
+    public bool canLoadResources = true;
+
     public static readonly float LARGE_EPSILON = 0.0001f;
 
     // Start is called before the first frame update
@@ -38,9 +40,12 @@ public class RayCarriage : RayTrain
 
     protected void UpdateColour()
     {
-        float qtyBuff = resourceQty;
-        float newL = 0.5f + qtyBuff / 100f;
-        localMat.color = Color.HSVToRGB(resourceH, resourceS, newL);
+        if(canLoadResources)
+        {
+            float qtyBuff = resourceQty;
+            float newL = 0.5f + qtyBuff / 100f;
+            localMat.color = Color.HSVToRGB(resourceH, resourceS, newL);
+        }
     }
 
     protected override void NotifyBeingPulled(RayTrain puller)
@@ -78,6 +83,11 @@ public class RayCarriage : RayTrain
 
     public int LoadAsMuchAsPossible(int max)
     {
+        //Allows for no loading carriages like passanger cars
+        if (!canLoadResources)
+        {
+            return 0;
+        }
         if(resourceQty < 100)
         {
             int maxToFull = 100 - resourceQty;
@@ -103,6 +113,11 @@ public class RayCarriage : RayTrain
 
     public int UnloadAsMuchAsPossible()
     {
+        //Allows for no loading carriages like passanger cars
+        if (!canLoadResources)
+        {
+            return 0;
+        }
         int buffer = resourceQty;
         resourceQty = 0;
         UpdateColour();
