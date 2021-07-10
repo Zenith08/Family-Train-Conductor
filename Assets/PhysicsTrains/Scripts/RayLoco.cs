@@ -25,6 +25,10 @@ public class RayLoco : RayTrain
 
     private bool isCollided = false;
 
+    [Header("Directional Lights")]
+    public List<GameObject> forwardLights;
+    public List<GameObject> reverseLights;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -55,7 +59,12 @@ public class RayLoco : RayTrain
         else
         {
             speedMultiplier = controler.GetSpeed(channel);
-            forewards = controler.GetDirection(channel);
+            bool newDirection = controler.GetDirection(channel);
+            if(forewards != newDirection)
+            {
+                forewards = newDirection;
+                UpdateDirectionLights();
+            }
             speed = forewards ? (speedMultiplier * maxSpeedF) : (speedMultiplier * -maxSpeedR);
 
             if (forewards)
@@ -104,6 +113,18 @@ public class RayLoco : RayTrain
             {
                 trainBehind.PullingFixedUpdate(speed);
             }
+        }
+    }
+
+    private void UpdateDirectionLights()
+    {
+        foreach(GameObject go in forwardLights)
+        {
+            go.SetActive(forewards);
+        }
+        foreach(GameObject go in reverseLights)
+        {
+            go.SetActive(!forewards);
         }
     }
 }

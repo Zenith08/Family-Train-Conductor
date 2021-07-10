@@ -8,6 +8,7 @@ TagManager:
   - DCCControler
   - PassengerManager
   - UIHudRoot
+  - AudioManager
   layers:
   - Default
   - TransparentFX
