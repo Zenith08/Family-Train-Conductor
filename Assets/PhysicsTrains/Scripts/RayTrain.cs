@@ -70,6 +70,18 @@ public class RayTrain : MonoBehaviour
         //Default behaviour is do nothing
     }
 
+    public RayTrain GetCarAtRear()
+    {
+        if(trainBehind != null)
+        {
+            return trainBehind.GetCarAtRear();
+        }
+        else
+        {
+            return this;
+        }
+    }
+
     /*
     private void LineFollowMovement()
     {

@@ -123,7 +123,8 @@ public class RayLoco : RayTrain
             {
                 targetSwitchLastFrame = controler.GetNextSwitch(channel);
                 //Get rotation from track
-                bool rayDown = Physics.Raycast(rayStart.transform.position, -rayStart.transform.up, out RaycastHit downHit, 0.5f);
+                GameObject switchRayStart = forewards ? rayStart : GetCarAtRear().rayStart;
+                bool rayDown = Physics.Raycast(switchRayStart.transform.position, -switchRayStart.transform.up, out RaycastHit downHit, 0.5f);
                 Debug.DrawRay(rayStart.transform.position, -rayStart.transform.up, Color.blue, 0.5f);
                 if (!rayDown)
                 {
