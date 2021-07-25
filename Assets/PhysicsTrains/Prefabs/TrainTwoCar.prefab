@@ -125,6 +125,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d26839276638bb47a6a11dcbef14474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1258885256118576991 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3626222376360327444, guid: ca9603b83ff24bc488a468e1f2531992,
+    type: 3}
+  m_PrefabInstance: {fileID: 2534008652607200843}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3996800423418884016
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -137,6 +143,11 @@ PrefabInstance:
       propertyPath: trainBehind
       value: 
       objectReference: {fileID: 5233051166774207595}
+    - target: {fileID: 7007308586126474021, guid: 52d25e18aab94ec478042bcc11dc4a5a,
+        type: 3}
+      propertyPath: backRaySource
+      value: 
+      objectReference: {fileID: 1258885256118576991}
     - target: {fileID: 8076070014312714581, guid: 52d25e18aab94ec478042bcc11dc4a5a,
         type: 3}
       propertyPath: m_Name

@@ -423,6 +423,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 619319984799710181, guid: 273c04a3043144d438a7eea20db21f48,
         type: 3}
+      propertyPath: maxSpeedF
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 619319984799710181, guid: 273c04a3043144d438a7eea20db21f48,
+        type: 3}
       propertyPath: dccControl
       value: 1
       objectReference: {fileID: 0}
@@ -431,6 +436,11 @@ PrefabInstance:
       propertyPath: trainBehind
       value: 
       objectReference: {fileID: 7834822167304401878}
+    - target: {fileID: 619319984799710181, guid: 273c04a3043144d438a7eea20db21f48,
+        type: 3}
+      propertyPath: backRaySource
+      value: 
+      objectReference: {fileID: 4843205285822428645}
     - target: {fileID: 619319984799710181, guid: 273c04a3043144d438a7eea20db21f48,
         type: 3}
       propertyPath: forwardLights.Array.size
@@ -526,6 +536,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7650060154131772271, guid: 273c04a3043144d438a7eea20db21f48,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 273c04a3043144d438a7eea20db21f48, type: 3}
 --- !u!4 &1636663276373506319 stripped
@@ -618,6 +633,11 @@ PrefabInstance:
       propertyPath: trainAhead
       value: 
       objectReference: {fileID: 548199454490792820}
+    - target: {fileID: 3469714484365214121, guid: 182a70dfbde4daf47973c524f7524ea9,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 182a70dfbde4daf47973c524f7524ea9, type: 3}
 --- !u!1 &7834822167304401877 stripped
@@ -644,3 +664,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d26839276638bb47a6a11dcbef14474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &4843205285822428645 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2374527885905789788, guid: 182a70dfbde4daf47973c524f7524ea9,
+    type: 3}
+  m_PrefabInstance: {fileID: 7188449809535203001}
+  m_PrefabAsset: {fileID: 0}

@@ -44,7 +44,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_backgroundMusicList: []
-  m_sfxList: []
+  m_sfxList:
+  - m_name: NewRoute
+    m_audioClip: {fileID: 8300000, guid: cb7d7176405736541aae532f8a5751cb, type: 3}
+    m_looping: 0
+    m_volume: 1
+    m_pitch: 1
+    m_fadeInSpeed: 0
+    m_fadeOutSpeed: 0
+    m_fade: 0
+    m_object: {fileID: 0}
+    m_audioSource: {fileID: 0}
+  - m_name: SwitchToggle
+    m_audioClip: {fileID: 8300000, guid: 7f835c70e8bc5de45baca8dba70d89a0, type: 3}
+    m_looping: 0
+    m_volume: 1
+    m_pitch: 1
+    m_fadeInSpeed: 0
+    m_fadeOutSpeed: 0
+    m_fade: 0
+    m_object: {fileID: 0}
+    m_audioSource: {fileID: 0}
+  - m_name: TrainHorn
+    m_audioClip: {fileID: 8300000, guid: a5a015992e04165489abf1fd0120a652, type: 3}
+    m_looping: 0
+    m_volume: 1
+    m_pitch: 1
+    m_fadeInSpeed: 0
+    m_fadeOutSpeed: 0
+    m_fade: 0
+    m_object: {fileID: 0}
+    m_audioSource: {fileID: 0}
+  - m_name: TrainStopStation
+    m_audioClip: {fileID: 8300000, guid: 594a95d7872af7d469e29d74936afeb7, type: 3}
+    m_looping: 0
+    m_volume: 1
+    m_pitch: 1
+    m_fadeInSpeed: 0
+    m_fadeOutSpeed: 0
+    m_fade: 0
+    m_object: {fileID: 0}
+    m_audioSource: {fileID: 0}
   m_currentMusic:
     m_name: 
     m_audioClip: {fileID: 0}

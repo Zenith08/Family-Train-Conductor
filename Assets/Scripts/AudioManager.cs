@@ -7,6 +7,11 @@ namespace AudioManager
 {
     public class AudioManager : MonoBehaviour
     {
+        public const string NewRoute = "NewRoute";
+        public const string SwitchToggle = "SwitchToggle";
+        public const string TrainHorn = "TrainHorn";
+        public const string TrainStopStation = "TrainStopStation";
+
         public AudioData[] m_backgroundMusicList;
 
         public AudioData[] m_sfxList;

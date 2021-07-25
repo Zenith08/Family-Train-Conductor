@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AudioManager;
 
 public class PassengerManager : MonoBehaviour
 {
@@ -70,6 +71,7 @@ public class PassengerManager : MonoBehaviour
         PassengerTrip newTrip = new PassengerTrip(baseTripsToGenerate[nextTripToGenerate], Mathf.RoundToInt(Time.time + bookAheadTime), hudComponent.GetComponent<RouteHudElement>());
         UpdateTripGeneration(); //Restores this for the next cycle
         activeTrips.Add(newTrip);
+        AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.NewRoute);
     }
 
     private void UpdateTripGeneration()
@@ -111,12 +113,13 @@ public class PassengerManager : MonoBehaviour
                     activeTrips[i].CurrentlyAssignedTrain() == 0 && 
                     activeTrips[i].StationStartsRoute(stationNumber))
                 {
-                    if(Time.time > activeTrips[i].scheduledStart)
+                    if(Time.time > activeTrips[i].scheduledStart && train.activeRoute != i)
                     {
                         Debug.Log("PassengerSystem Train " + train.uniqueId + " is starting route " + i);
 
                         activeTrips[i].TrainStartingRoute(train);
                         train.activeRoute = i;
+                        AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.TrainStopStation);
                     }
                 }
             }
@@ -179,14 +182,22 @@ public class PassengerTrip
         return assignedTrain;
     }
 
+    /**
+     * Checks if a train is on a valid route and if it is marks it as having stopped at the station
+     * Returns true if the route is done after completing this station
+     */
     public bool ReportTrainStoppedAtStation(int station)
     {
         for(int i = 0, count = route.Count; i < count; i++)
         {
-            if(station == route[i].stationId)
+            if (station == route[i].stationId)
             {
-                route[i].hasStopped = true;
-                route[i].timeStopped = Mathf.RoundToInt(Time.time);
+                if (!route[i].hasStopped)
+                {
+                    AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.TrainStopStation);
+                    route[i].hasStopped = true;
+                    route[i].timeStopped = Mathf.RoundToInt(Time.time);
+                }
             }
             else if (!route[i].hasStopped)
             {

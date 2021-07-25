@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AudioManager;
 
 public class SwitchTrack : MonoBehaviour
 {
@@ -42,6 +43,7 @@ public class SwitchTrack : MonoBehaviour
         {
             direction = !direction;
             UpdateTracks();
+            AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.SwitchToggle);
         }
     }
 

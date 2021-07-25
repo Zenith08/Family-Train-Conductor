@@ -6,7 +6,7 @@ public class RayLoco : RayTrain
 {
     private float speed = 0;
 
-    public float maxSpeedF = 5f;
+    public float maxSpeedF = 3f;
     public float maxSpeedR = 3f;
 
     public string goFaster = "w";
@@ -29,11 +29,20 @@ public class RayLoco : RayTrain
     public List<GameObject> forwardLights;
     public List<GameObject> reverseLights;
 
+    [Header("TrackClearance")]
+    public GameObject frontRaySource;
+    public GameObject backRaySource;
+
+    private bool playedSoundSinceStop = false;
+
+    private AudioSource trainSound;
+
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         controler = GameObject.FindGameObjectWithTag("DCCControler").GetComponent<DCCControler>();
+        trainSound = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -67,6 +76,7 @@ public class RayLoco : RayTrain
             }
             speed = forewards ? (speedMultiplier * maxSpeedF) : (speedMultiplier * -maxSpeedR);
 
+            //Checks for a train infront of us
             if (forewards)
             {
                 bool rayFront = Physics.Raycast(frontClearanceRay.transform.position, frontClearanceRay.forward, out RaycastHit frontHit, 1f);
@@ -76,6 +86,34 @@ public class RayLoco : RayTrain
                     {
                         speed = 0f;
                     }
+                }
+            }
+
+            //Checks if we are on active track
+            GameObject raySource = forewards ? frontRaySource : backRaySource;
+            //For lazy back compatability
+            if(raySource != null)
+            {
+                bool track = Physics.Raycast(raySource.transform.position, Vector3.down, out RaycastHit trackHit, 2f);
+                if (track)
+                {
+                    if(!trackHit.collider.TryGetComponent<Track>(out _))
+                    {
+                        speed = 0f;
+                        if(!playedSoundSinceStop)
+                        {
+                            AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.TrainHorn);
+                            playedSoundSinceStop = true;
+                        }
+                    }
+                    else
+                    {
+                        playedSoundSinceStop = false;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Clearance Rays Didn't Find Track, this is bad news");
                 }
             }
 
@@ -102,6 +140,7 @@ public class RayLoco : RayTrain
                 }
             }
         }
+        UpdateSoundEffect();
     }
 
     private void FixedUpdate()
@@ -118,13 +157,34 @@ public class RayLoco : RayTrain
 
     private void UpdateDirectionLights()
     {
-        foreach(GameObject go in forwardLights)
+        foreach (GameObject go in forwardLights)
         {
             go.SetActive(forewards);
         }
-        foreach(GameObject go in reverseLights)
+        foreach (GameObject go in reverseLights)
         {
             go.SetActive(!forewards);
+        }
+    }
+
+    private void UpdateSoundEffect()
+    {
+        if (speed == 0)
+        {
+            if (trainSound.isPlaying)
+            {
+                trainSound.Stop();
+            }
+        }
+        else
+        {
+            if (!trainSound.isPlaying)
+            {
+                trainSound.Play();
+            }
+            float maxSpd = Mathf.Max(maxSpeedF, maxSpeedR);
+            float percentPitch = speed / maxSpd;
+            trainSound.pitch = 3f * percentPitch;
         }
     }
 }
