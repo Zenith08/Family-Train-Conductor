@@ -8,6 +8,8 @@ public class SwitchTrack : MonoBehaviour
     public static readonly bool STRAIGHT = false;
     public static readonly bool TURN = true;
 
+    public List<SwitchTrack> linkedSwitches;
+
     public Track straight;
     public Track turn;
 
@@ -39,7 +41,28 @@ public class SwitchTrack : MonoBehaviour
 
     public void DoSwitch()
     {
-        if (switchClearance.IsSwitchClear())
+        if (CanSwitch())
+        {
+            if(linkedSwitches.Count == 0)
+            {
+                direction = !direction;
+                UpdateTracks();
+                AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.SwitchToggle);
+            }
+            else
+            {
+                if (linkedSwitches.TrueForAll(link => link.CanSwitch()))
+                {
+                    linkedSwitches.ForEach(link => link.SwitchFromLink());
+                    SwitchFromLink();
+                }
+            }
+        }
+    }
+
+    private void SwitchFromLink()
+    {
+        if (CanSwitch())
         {
             direction = !direction;
             UpdateTracks();
@@ -51,5 +74,10 @@ public class SwitchTrack : MonoBehaviour
     {
         straight.SetTrackActive(direction == STRAIGHT);
         turn.SetTrackActive(direction == TURN);
+    }
+
+    protected bool CanSwitch()
+    {
+        return switchClearance.IsSwitchClear();
     }
 }

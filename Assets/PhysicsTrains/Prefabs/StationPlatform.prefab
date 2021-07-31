@@ -86,13 +86,13 @@ TextMesh:
   m_Anchor: 0
   m_Alignment: 0
   m_TabSize: 4
-  m_FontSize: 0
+  m_FontSize: 20
   m_FontStyle: 0
   m_RichText: 1
   m_Font: {fileID: 0}
   m_Color:
     serializedVersion: 2
-    rgba: 4288479138
+    rgba: 4281347229
 --- !u!1 &8478688709515750549
 GameObject:
   m_ObjectHideFlags: 0
