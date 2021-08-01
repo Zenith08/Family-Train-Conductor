@@ -33,8 +33,9 @@ public class RayLoco : RayTrain
     public GameObject frontRaySource;
     public GameObject backRaySource;
 
-    private bool playedSoundSinceStop = false;
+    private CoreGameServer serverRef;
 
+    private bool playedSoundSinceStop = false;
     private AudioSource trainSound;
 
     // Start is called before the first frame update
@@ -43,6 +44,7 @@ public class RayLoco : RayTrain
         base.Start();
         controler = GameObject.FindGameObjectWithTag("DCCControler").GetComponent<DCCControler>();
         trainSound = GetComponent<AudioSource>();
+        serverRef = GameObject.FindWithTag("CoreServer").GetComponent<CoreGameServer>();
     }
 
     // Update is called once per frame
@@ -85,6 +87,11 @@ public class RayLoco : RayTrain
                     if(frontHit.collider.TryGetComponent<RayTrain>(out _))
                     {
                         speed = 0f;
+                        if (serverRef != null)
+                        {
+                            Debug.LogWarning("Server not null, stopping train");
+                            serverRef.TrainChangeClientSpeed(channel, speed);
+                        }
                     }
                 }
             }
@@ -104,6 +111,12 @@ public class RayLoco : RayTrain
                         {
                             AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.TrainHorn);
                             playedSoundSinceStop = true;
+                            // Turns out this only wants to happen once too
+                            if (serverRef != null)
+                            {
+                                Debug.LogWarning("Server not null, stopping train");
+                                serverRef.TrainChangeClientSpeed(channel, speed);
+                            }
                         }
                     }
                     else

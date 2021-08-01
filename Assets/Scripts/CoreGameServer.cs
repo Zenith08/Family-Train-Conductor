@@ -84,6 +84,18 @@ public class CoreGameServer : MonoBehaviour
 		//controllerRef.SetDCCInformation(controllerStates);
     }
 
+	public void TrainChangeClientSpeed(int channel, float speed)
+    {
+		Debug.LogWarning("Train send speed request " + channel + ", " + speed);
+		ConnectedClient client = clients[channel];
+		if (client.alive)
+        {
+			Debug.LogWarning("Client alive, sending message");
+			client.baseState.speed = speed;
+			client.SendMessage(client.baseState);
+        }
+    }
+
     /// <summary> 	
     /// Runs in background TcpServerThread; Handles incomming TcpClient requests 	
     /// </summary> 	

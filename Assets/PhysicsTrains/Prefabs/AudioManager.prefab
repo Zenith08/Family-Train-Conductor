@@ -56,7 +56,7 @@ MonoBehaviour:
     m_object: {fileID: 0}
     m_audioSource: {fileID: 0}
   - m_name: SwitchToggle
-    m_audioClip: {fileID: 8300000, guid: 7f835c70e8bc5de45baca8dba70d89a0, type: 3}
+    m_audioClip: {fileID: 8300000, guid: 9b3194722be4b6441badc35961e01825, type: 3}
     m_looping: 0
     m_volume: 1
     m_pitch: 1

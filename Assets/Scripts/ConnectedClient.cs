@@ -123,7 +123,7 @@ public class ConnectedClient
         }
     }
 
-    private void SendMessage(ControllerState message)
+    public void SendMessage(ControllerState message)
     {
         Debug.Log("Trying to send message to client");
         baseState = message;
