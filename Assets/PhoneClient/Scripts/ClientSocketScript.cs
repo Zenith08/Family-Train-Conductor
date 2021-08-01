@@ -5,6 +5,7 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using UnityEngine.SceneManagement;
 
 public class ClientSocketScript : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class ClientSocketScript : MonoBehaviour
 	public event ControllerStateChange OnControllerStateChange;
 
 	#endregion
+
 	// Use this for initialization 	
 	void Start()
 	{
@@ -31,7 +33,7 @@ public class ClientSocketScript : MonoBehaviour
 		controllerState = new ControllerState();
 	}
 
-	public void InitializeConnection(string ipin, int portin)
+    public void InitializeConnection(string ipin, int portin)
     {
 		Debug.Log("Client socket creating connection to ip " + ipin);
 		ip = ipin;
@@ -71,27 +73,54 @@ public class ClientSocketScript : MonoBehaviour
 			Byte[] bytes = new Byte[1024];
 			while (true)
 			{
-				// Get a stream object for reading 				
-				using (NetworkStream stream = socketConnection.GetStream())
-				{
-					Debug.Log("Network stream created");
-					int length;
-					// Read incomming stream into byte arrary. 					
-					while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
-					{
-						Debug.Log("Recieved incoming data");
-						var incommingData = new byte[length];
-						Array.Copy(bytes, 0, incommingData, 0, length);
-						// Convert byte array to string message. 						
-						string serverMessage = Encoding.ASCII.GetString(incommingData);
-						Debug.Log("server message received as: " + serverMessage);
-						controllerState.FromJsonOverwrite(serverMessage);
-                        //if (OnControllerStateChange != null) OnControllerStateChange(controllerState);
-                        //StartCoroutine(ForceEventToMainThread(controllerState));
-                        stateToPush = controllerState;
-                        stateAvailableToPush = true;
-					}
-				}
+                try
+                {
+                    // Get a stream object for reading 				
+                    using (NetworkStream stream = socketConnection.GetStream())
+                    {
+                        Debug.Log("Network stream created");
+                        int length;
+                        // Read incomming stream into byte arrary. 					
+                        while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
+                        {
+                            Debug.Log("Recieved incoming data");
+                            var incommingData = new byte[length];
+                            Array.Copy(bytes, 0, incommingData, 0, length);
+                            // Convert byte array to string message. 						
+                            string serverMessage = Encoding.ASCII.GetString(incommingData);
+                            Debug.Log("server message received as: " + serverMessage);
+
+                            // Validation step, mimicked from server code
+                            if(ValidateAndRecoverPacket(serverMessage, out string validMessage))
+                            {
+                                Debug.Log("Server message after validation: " + validMessage);
+                                try
+                                {
+                                    controllerState.FromJsonOverwrite(validMessage);
+                                }
+                                catch(Exception e)
+                                {
+                                    // Hypothetically this never happens
+                                    Debug.LogError(e.GetType().Name + " Exception thrown in JSON Parsing. Json Reads: " + validMessage);
+                                }
+
+                            }
+
+                            //if (OnControllerStateChange != null) OnControllerStateChange(controllerState);
+                            //StartCoroutine(ForceEventToMainThread(controllerState));
+                            stateToPush = controllerState;
+                            stateAvailableToPush = true;
+                        }
+                        Debug.LogError("No more packets to receive");
+                    }
+                }
+                catch(InvalidOperationException ioe)
+                {
+                    Debug.LogError("Invalid operation exception, the client is likely stopped");
+                    Debug.LogError(ioe.ToString());
+                    isConnected = false;
+                    break;
+                }
 			}
 		}
 		catch (SocketException socketException)
@@ -99,6 +128,54 @@ public class ClientSocketScript : MonoBehaviour
 			Debug.Log("Socket exception: " + socketException);
 		}
 	}
+
+    private bool ValidateAndRecoverPacket(string target, out string result)
+    {
+        if (target.Contains("}{"))
+        {
+            //If it is a multipacket then we can try to recover
+            //Recover bad packet
+            Debug.LogWarning("Bad client packet, multiple in one. Attempting to recover");
+            string[] options = target.Replace("}{", "}~{").Split('~');  //target.Split(new string[] { "}{" }, StringSplitOptions.None);
+            int count = options.Length;
+            int countBack = 1;
+            result = options[count - countBack];
+            string resultLastCheck;
+            while (!ValidateAndRecoverPacket(result, out resultLastCheck))
+            {
+                Debug.LogWarning("Internal packet was bad, attempting previous one");
+                countBack++;
+                if (count - countBack < 0)
+                {
+                    Debug.LogError("All elements in a multi-packet were invalid, rejecting");
+                    result = "";
+                    return false;
+                }
+                else
+                {
+                    result = options[count - countBack];
+                }
+            }
+            result = resultLastCheck;
+            return true;
+        }
+        else
+        {
+            //If not it has to pass basic tests or it will fail
+            if (!target.StartsWith("{") || !target.EndsWith("}"))
+            {
+                Debug.LogError("Rejecting malformed packet without opening or closing bracket");
+                result = "";
+                return false;
+            }
+            else
+            {
+                //The original packet is a valid, single packet message.
+                result = target;
+                return true;
+            }
+        }
+    }
 
     private bool stateAvailableToPush = false;
     private ControllerState stateToPush;
