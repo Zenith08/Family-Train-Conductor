@@ -27,6 +27,8 @@ public class PassengerManager : MonoBehaviour
     public GameObject uiHudPrefab;
     private GameObject uiHudRoot;
 
+    public List<StationBase> stationPlatformBases = new List<StationBase>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -102,6 +104,45 @@ public class PassengerManager : MonoBehaviour
         UpdateTripGeneration(); //Restores this for the next cycle
         activeTrips.Add(newTrip);
         AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.NewRoute);
+        UpdateStationOccupancy(newTrip);
+    }
+
+    private void UpdateStationOccupancy(PassengerTrip startingTrip)
+    {
+        Debug.Log("Updating occupancy");
+        foreach(StationBase spb in stationPlatformBases)
+        {
+            Debug.Log("Checking platform " + spb.platform.name);
+            for(int i = 0, count = startingTrip.route.Count-1; i < count; i++)
+            {
+                RequiredStops rs = startingTrip.route[i];
+                Debug.Log("Checking required stop " + rs.stationId);
+                for(int j = 0, pidsCnt = spb.platformIds.Length; j < pidsCnt; j++)
+                {
+                    Debug.Log("Checking stop id value " + spb.platformIds[j]);
+                    if (spb.platformIds[j] == rs.stationId)
+                    {
+                        Debug.Log("Platform found");
+                        spb.platform.IncreaseCrowding();
+                    }
+                }
+            }
+        }
+    }
+
+    private void UpdateReducedStationOccupancy(int stationId)
+    {
+        for(int i = 0, count = stationPlatformBases.Count; i < count; i++)
+        {
+            int[] platformIds = stationPlatformBases[i].platformIds;
+            for(int j = 0, pidCnt = platformIds.Length; j < pidCnt; j++)
+            {
+                if (platformIds[j] == stationId)
+                {
+                    stationPlatformBases[i].platform.DecrementCrowding();
+                }
+            }
+        }
     }
 
     private void UpdateTripGeneration()
@@ -151,6 +192,7 @@ public class PassengerManager : MonoBehaviour
                         activeTrips[i].TrainStartingRoute(train);
                         train.activeRoute = i;
                         AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.TrainStopStation);
+                        UpdateReducedStationOccupancy(stationNumber);
                     }
                 }
             }
@@ -158,6 +200,12 @@ public class PassengerManager : MonoBehaviour
         //If the train is supposed to be at the station, mark it as stopped
         //If the route is done flag it and free the train
     }
+}
+
+public struct StationBase
+{
+    public int[] platformIds;
+    public StationPlatformBase platform;
 }
 
 [System.Serializable]
