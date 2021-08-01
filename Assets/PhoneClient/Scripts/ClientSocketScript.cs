@@ -5,6 +5,7 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using UnityEngine.SceneManagement;
 
 public class ClientSocketScript : MonoBehaviour
 {
@@ -71,27 +72,37 @@ public class ClientSocketScript : MonoBehaviour
 			Byte[] bytes = new Byte[1024];
 			while (true)
 			{
-				// Get a stream object for reading 				
-				using (NetworkStream stream = socketConnection.GetStream())
-				{
-					Debug.Log("Network stream created");
-					int length;
-					// Read incomming stream into byte arrary. 					
-					while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
-					{
-						Debug.Log("Recieved incoming data");
-						var incommingData = new byte[length];
-						Array.Copy(bytes, 0, incommingData, 0, length);
-						// Convert byte array to string message. 						
-						string serverMessage = Encoding.ASCII.GetString(incommingData);
-						Debug.Log("server message received as: " + serverMessage);
-						controllerState.FromJsonOverwrite(serverMessage);
-                        //if (OnControllerStateChange != null) OnControllerStateChange(controllerState);
-                        //StartCoroutine(ForceEventToMainThread(controllerState));
-                        stateToPush = controllerState;
-                        stateAvailableToPush = true;
-					}
-				}
+                try
+                {
+                    // Get a stream object for reading 				
+                    using (NetworkStream stream = socketConnection.GetStream())
+                    {
+                        Debug.Log("Network stream created");
+                        int length;
+                        // Read incomming stream into byte arrary. 					
+                        while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
+                        {
+                            Debug.Log("Recieved incoming data");
+                            var incommingData = new byte[length];
+                            Array.Copy(bytes, 0, incommingData, 0, length);
+                            // Convert byte array to string message. 						
+                            string serverMessage = Encoding.ASCII.GetString(incommingData);
+                            Debug.Log("server message received as: " + serverMessage);
+                            controllerState.FromJsonOverwrite(serverMessage);
+                            //if (OnControllerStateChange != null) OnControllerStateChange(controllerState);
+                            //StartCoroutine(ForceEventToMainThread(controllerState));
+                            stateToPush = controllerState;
+                            stateAvailableToPush = true;
+                        }
+                        Debug.LogError("No more packets to receive");
+                    }
+                }
+                catch(InvalidOperationException ioe)
+                {
+                    Debug.LogError("Invalid operation exception, the client is likely stopped");
+                    Debug.LogError(ioe.ToString());
+                    break;
+                }
 			}
 		}
 		catch (SocketException socketException)
