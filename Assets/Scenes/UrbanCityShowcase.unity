@@ -5584,7 +5584,7 @@ PrefabInstance:
     - target: {fileID: 3838095108540103067, guid: c598c3322afe30a41985686a79a6ee89,
         type: 3}
       propertyPath: bookAheadTime
-      value: 30
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 3838095108540103067, guid: c598c3322afe30a41985686a79a6ee89,
         type: 3}

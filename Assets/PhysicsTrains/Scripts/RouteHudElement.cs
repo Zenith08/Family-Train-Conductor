@@ -13,6 +13,8 @@ public class RouteHudElement : MonoBehaviour
 
     private bool routeClaimed;
 
+    private Color routeColour;
+
     public void ConfigureWithData(PassengerTrip trip)
     {
         routeStartTime = trip.scheduledStart;
@@ -25,6 +27,9 @@ public class RouteHudElement : MonoBehaviour
             }
             routeText += trip.route[i].stationId;
         }
+        Debug.Log("Applying colour " + routeColour + " to the ui");
+        routeColour = trip.tripColour;
+        route.color = routeColour;
         route.text = routeText;
         routeClaimed = false;
     }

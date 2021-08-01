@@ -21,6 +21,9 @@ public class PassengerManager : MonoBehaviour
     private int nextTripToGenerate;
     private int locationInGenerationPattern = 0;
 
+    private List<Color> routeColors = new List<Color>() { new Color(0f, 0.6f, 0f), new Color(0f, 0f, 0.75f), new Color(0.75f, 0f, 0f), new Color(0.75f, 0f, 0.75f) };
+    private List<bool> colourAvailability = new List<bool>(){ false, false, false, false };
+
     public GameObject uiHudPrefab;
     private GameObject uiHudRoot;
 
@@ -52,6 +55,33 @@ public class PassengerManager : MonoBehaviour
         }
     }
 
+    protected Color ClaimNextColour()
+    {
+        for(int i = 0, count = colourAvailability.Count; i < count; i++)
+        {
+            if (!colourAvailability[i])
+            {
+                Color output = routeColors[i];
+                colourAvailability[i] = true;
+                Debug.Log("Colour " + i + " claimed which is " + output);
+                return output;
+            }
+        }
+        return Color.clear;
+    }
+
+    protected void FreeColour(Color colour)
+    {
+        for(int i = 0, count = routeColors.Count; i < count; i++)
+        {
+            if(routeColors[i] == colour)
+            {
+                colourAvailability[i] = false;
+                return;
+            }
+        }
+    }
+
     int CurrentlyActiveRoutes()
     {
         int sum = 0;
@@ -68,7 +98,7 @@ public class PassengerManager : MonoBehaviour
     private void ScheduleRoute()
     {
         GameObject hudComponent = GameObject.Instantiate(uiHudPrefab, uiHudRoot.transform);
-        PassengerTrip newTrip = new PassengerTrip(baseTripsToGenerate[nextTripToGenerate], Mathf.RoundToInt(Time.time + bookAheadTime), hudComponent.GetComponent<RouteHudElement>());
+        PassengerTrip newTrip = new PassengerTrip(baseTripsToGenerate[nextTripToGenerate], Mathf.RoundToInt(Time.time + bookAheadTime), hudComponent.GetComponent<RouteHudElement>(), ClaimNextColour());
         UpdateTripGeneration(); //Restores this for the next cycle
         activeTrips.Add(newTrip);
         AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.NewRoute);
@@ -100,7 +130,8 @@ public class PassengerManager : MonoBehaviour
             if (trainsRoute.ReportTrainStoppedAtStation(stationNumber))
             {
                 Debug.Log("PassengerSystem Train has finished route " + train.uniqueId);
-
+                FreeColour(train.GetRouteColour());
+                train.UpdateMaterialColours(Color.black);
                 train.activeRoute = -1;
             }
         }
@@ -116,7 +147,7 @@ public class PassengerManager : MonoBehaviour
                     if(Time.time > activeTrips[i].scheduledStart && train.activeRoute != i)
                     {
                         Debug.Log("PassengerSystem Train " + train.uniqueId + " is starting route " + i);
-
+                        
                         activeTrips[i].TrainStartingRoute(train);
                         train.activeRoute = i;
                         AudioManager.AudioManager.m_instance.PlaySFX(AudioManager.AudioManager.TrainStopStation);
@@ -143,6 +174,8 @@ public class PassengerTrip
     [SerializeField]
     public int assignedTrain;
 
+    public Color tripColour;
+
     public bool isRouteDone = false;
     //UI component
     private RouteHudElement uiComponent;
@@ -155,8 +188,9 @@ public class PassengerTrip
         uiComponent.ConfigureWithData(this);
     }
 
-    public PassengerTrip(PassengerTrip original, int scheduledStart, RouteHudElement hudElement)
+    public PassengerTrip(PassengerTrip original, int scheduledStart, RouteHudElement hudElement, Color colour)
     {
+        this.tripColour = colour;
         this.scheduledStart = scheduledStart;
         route = new List<RequiredStops>(original.route.Count);
         for(int i = 0, count = original.route.Count; i < count; i++)
@@ -168,6 +202,8 @@ public class PassengerTrip
                 stationId = original.route[i].stationId
             });
         }
+
+        //This stuff last
         this.uiComponent = hudElement;
         uiComponent.ConfigureWithData(this);
     }
@@ -234,6 +270,7 @@ public class PassengerTrip
         assignedTrain = train.uniqueId;
         route[0].hasStopped = true;
         uiComponent.NotifyRouteStarted();
+        train.UpdateMaterialColours(tripColour);
     }
 }
 
